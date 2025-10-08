@@ -1,5 +1,5 @@
 import tkinter as tk
-
+#Definiranje klase učenik
 class Ucenik:
     def __init__(self, ime, prezime, razred):
         self.ime=ime
@@ -7,7 +7,7 @@ class Ucenik:
         self.razred=razred
     def __str__(self):
         return(f"Učenik {self.prezime}, {self.ime} razreda {self.razred}")
-#print(Ucenik("Pero","Perić","4.a"))
+#Definiranje glavne klase
 class EvidencijaApp:
     def __init__(self,root):
         self.root=root
@@ -47,17 +47,21 @@ class EvidencijaApp:
         self.spremi_gumb=tk.Button(unos_frame,text="Spremi izmjene",command=self.spremi_izmjene)
         self.spremi_gumb.grid(row=3,column=1,padx=5,pady=10,sticky="W")
         #Listbox
-        listbox=tk.Listbox(prikaz_frame)
-        listbox.grid(row=0,column=0,sticky="NSEW")
+        self.listbox=tk.Listbox(prikaz_frame)
+        self.listbox.grid(row=0,column=0,sticky="NSEW")
         #Scrollbar listboxa
-        scrollbar = tk.Scrollbar(prikaz_frame,orient="vertical",command=listbox.yview)
+        scrollbar=tk.Scrollbar(prikaz_frame,orient="vertical",command=self.listbox.yview)
         scrollbar.grid(row=0,column=1,sticky="NS")
-        listbox.config(yscrollcommand=scrollbar.set)
+        self.listbox.config(yscrollcommand=scrollbar.set)
     #Dodavanje ucenika
     def dodaj_ucenika(self):
-        ime=self.ime_entry.get()
-        prezime=self.prezime_entry.get()
-        razred=self.razred_entry.get()
+        ime = self.ime_entry.get().strip()
+        prezime = self.prezime_entry.get().strip()
+        razred = self.razred_entry.get().strip()
+        if ime and prezime and razred:
+            ucenik=Ucenik(ime, prezime, razred)
+            self.ucenici.append(ucenik)
+            self.osvjezi_prikaz()
     #Osvjezavanje prikaza
     def osvjezi_prikaz(self):
         self.listbox.delete(0,tk.END)
@@ -65,7 +69,7 @@ class EvidencijaApp:
             self.listbox.insert(tk.END,str(ucenik))
     #Odabir ucenika
     def odaberi_ucenika(self,event):
-        index=self.listbox.curselection()[0]
+        index=self.listbox.curselection()
         self.odabrani_ucenik_index=index
         ucenik=self.ucenici[index]
         self.ime_entry.delete(0,tk.END)
@@ -82,6 +86,10 @@ class EvidencijaApp:
             ucenik.prezime=self.prezime_entry.get()
             ucenik.razred=self.razred_entry.get()
             self.osvjezi_prikaz()
+            self.ime_entry.delete(0, tk.END)
+            self.prezime_entry.delete(0, tk.END)
+            self.razred_entry.delete(0, tk.END)
+            self.odabrani_ucenik_index = None
 
 #Pokretanje
 if __name__=="__main__":
