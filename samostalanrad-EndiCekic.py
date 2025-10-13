@@ -49,6 +49,7 @@ class EvidencijaApp:
         #Listbox
         self.listbox=tk.Listbox(prikaz_frame)
         self.listbox.grid(row=0,column=0,sticky="NSEW")
+        self.listbox.bind("<<ListboxSelect>>", self.odaberi_ucenika)
         #Scrollbar listboxa
         scrollbar=tk.Scrollbar(prikaz_frame,orient="vertical",command=self.listbox.yview)
         scrollbar.grid(row=0,column=1,sticky="NS")
@@ -70,14 +71,15 @@ class EvidencijaApp:
     #Odabir ucenika
     def odaberi_ucenika(self,event):
         index=self.listbox.curselection()
-        self.odabrani_ucenik_index=index
-        ucenik=self.ucenici[index]
-        self.ime_entry.delete(0,tk.END)
-        self.ime_entry.insert(0,ucenik.ime)
-        self.prezime_entry.delete(0,tk.END)
-        self.prezime_entry.insert(0,ucenik.prezime)
-        self.razred_entry.delete(0,tk.END)
-        self.razred_entry.insert(0,ucenik.razred)
+        if index:
+            self.odabrani_ucenik_index=index[0]
+            ucenik=self.ucenici[self.odabrani_ucenik_index]
+            self.ime_entry.delete(0,tk.END)
+            self.ime_entry.insert(0,ucenik.ime)
+            self.prezime_entry.delete(0,tk.END)
+            self.prezime_entry.insert(0,ucenik.prezime)
+            self.razred_entry.delete(0,tk.END)
+            self.razred_entry.insert(0,ucenik.razred)
     #Spremanje izmjena
     def spremi_izmjene(self):
         if self.odabrani_ucenik_index is not None:
