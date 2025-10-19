@@ -1,5 +1,7 @@
 import tkinter as tk
 import csv
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 #Definiranje klase učenik
 class Ucenik:
     ucenici=[]
@@ -49,10 +51,15 @@ class EvidencijaApp:
         self.spremi_gumb=tk.Button(unos_frame,text="Spremi izmjene",command=self.spremi_izmjene)
         self.spremi_gumb.grid(row=3,column=1,padx=5,pady=10,sticky="W")
         #CSV gumbi
-        self.spremi_gumb_CSV=tk.Button(unos_frame,text="Spremi CSV",command=lambda:spremi_u_CSV(self))
+        self.spremi_gumb_CSV=tk.Button(unos_frame,text="Spremi CSV",command=lambda:self.spremi_u_CSV())
         self.spremi_gumb_CSV.grid(row=4,column=1,padx=5,pady=10,sticky="W")
-        self.učitaj_gumb_CSV=tk.Button(unos_frame,text="Učitaj CSV",command=lambda:ucitaj_CSV(self))
+        self.učitaj_gumb_CSV=tk.Button(unos_frame,text="Učitaj CSV",command=lambda:self.ucitaj_CSV())
         self.učitaj_gumb_CSV.grid(row=4,column=0,padx=5,pady=10,sticky="W")
+        #XML gumbi
+        self.spremi_gumb_XML=tk.Button(unos_frame,text="Spremi XML",command=lambda:self.spremi_u_XML())
+        self.spremi_gumb_XML.grid(row=5,column=1,padx=5,pady=10,sticky="W")
+        self.učitaj_gumb_XML=tk.Button(unos_frame,text="Učitaj XML",command=lambda:self.ucitaj_iz_XML())
+        self.učitaj_gumb_XML.grid(row=5,column=0,padx=5,pady=10,sticky="W")
         #Listbox
         self.listbox=tk.Listbox(prikaz_frame)
         self.listbox.grid(row=0,column=0,sticky="NSEW")
@@ -99,28 +106,57 @@ class EvidencijaApp:
             self.prezime_entry.delete(0, tk.END)
             self.razred_entry.delete(0, tk.END)
             self.odabrani_ucenik_index = None
-#Spremanje u CSV
-def spremi_u_CSV(self):
-    filename="ucenici.csv"
-    with open(filename, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        writer.writerow(["Ime", "Prezime", "Razred"])
-        for ucenik in self.ucenici:
-            writer.writerow([ucenik.ime, ucenik.prezime, ucenik.razred])
+    #Spremanje u CSV
+    def spremi_u_CSV(self):
+        filename="ucenici.csv"
+        with open(filename, mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Ime", "Prezime", "Razred"])
+            for ucenik in self.ucenici:
+               writer.writerow([ucenik.ime, ucenik.prezime, ucenik.razred])
         print(f"Lista učenika je spremljena u {filename}")
-#Ucitavanje CSV
-def ucitaj_CSV(self):
-    filename="ucenici.csv"
-    with open(filename, mode='r', newline='', encoding='utf-8') as file:
-        reader = csv.reader(file)
-        next(reader)
-        for row in reader:
-            ime, prezime, razred=row
-            ucenik=Ucenik(ime, prezime, razred)
+    #Ucitavanje CSV
+    def ucitaj_CSV(self):
+        filename="ucenici.csv"
+        with open(filename, mode='r', newline='', encoding='utf-8') as file:
+            reader = csv.reader(file)
+            next(reader)
+            for row in reader:
+                ime, prezime, razred=row
+                ucenik=Ucenik(ime, prezime, razred)
+                self.ucenici.append(ucenik)
+            print(f"Lista učenika je učitana iz {filename}")
+            self.osvjezi_prikaz()
+            return self.ucenici
+    #Spremanje u XML
+    def spremi_u_XML(self):
+        filename="ucenici.xml"
+        root = ET.Element("Ucenici")
+        for ucenik in self.ucenici:
+            ucenik_elem = ET.SubElement(root, "Ucenik")
+            ime_elem = ET.SubElement(ucenik_elem, "Ime")
+            ime_elem.text = ucenik.ime
+            prezime_elem = ET.SubElement(ucenik_elem, "Prezime")
+            prezime_elem.text = ucenik.prezime
+            razred_elem = ET.SubElement(ucenik_elem, "Razred")
+            razred_elem.text = ucenik.razred
+        tree = ET.ElementTree(root)
+        tree.write("ucenici.xml", encoding='utf-8', xml_declaration=True)
+        print("Lista učenika je spremljena u ucenici.xml")
+    #Ucitavanje XML
+    def ucitaj_iz_XML(self):
+        filename="ucenici.xml"
+        tree = ET.parse(filename)
+        root = tree.getroot()
+        for ucenik_elem in root.findall('Ucenik'):
+            ime = ucenik_elem.find('Ime').text
+            prezime = ucenik_elem.find('Prezime').text
+            razred = ucenik_elem.find('Razred').text
+            ucenik = Ucenik(ime, prezime, razred)
             self.ucenici.append(ucenik)
-        print(f"Lista učenika je učitana iz {filename}")
+        print("Lista učenika je učitana iz ucenici.xml")
+        self.osvjezi_prikaz()
         return self.ucenici
-    self.refresh()
 
 #Pokretanje
 if __name__=="__main__":
