@@ -26,7 +26,7 @@ class Prikaz_lagera:
     def __init__(self, root):
         self.root = root
         self.root.title("Lager vozila")
-        self.geometry="1200x600"
+        self.root.geometry("1400x600")
 
         self.automobili = []
         self.motocikli = []
@@ -38,8 +38,8 @@ class Prikaz_lagera:
         unos_frame = tk.Frame(self.root, padx=10, pady=10)
         unos_frame.grid(row=0, column=0, sticky="EW")
 
-        prikaz.frame = tk.Frame(self.root, padx=10, pady=10)
-        prikaz.frame.grid(row=1, column=0, sticky="NSEW")
+        prikaz_frame = tk.Frame(self.root, padx=10, pady=10)
+        prikaz_frame.grid(row=1, column=0, sticky="NSEW")
 
         prikaz_frame.columnconfigure(0, weight=1)
         prikaz_frame.rowconfigure(0, weight=1)
@@ -163,6 +163,27 @@ class Prikaz_lagera:
         self.broj_vrata_entry.delete(0, tk.END)
         self.tip_goriva_entry.delete(0, tk.END)
         self.tip_motocikla_entry.delete(0, tk.END)
+    def odaberi_vozilo(self, index):
+        index=self.listbox.curselection()[0]
+        if index:
+            self.odabrano_vozilo_index=index[0]
+            vozilo=self.vozilo[self.odabrano_vozilo_index]
+            self.marka_entry.delete(0,tk.END)
+            self.marka_entry.insert(0,vozilo.marka)
+            self.model_entry.delete(0,tk.END)
+            self.model_entry.insert(0,vozilo.model)
+            self.godina_entry.delete(0,tk.END)
+            self.godina_entry.insert(0,vozilo.godina_proizvodnje)
+            self.novo_entry.delete(0,tk.END)
+            self.novo_entry.insert(0,str(int(vozilo.novo)))
+            self.boja_entry.delete(0,tk.END)
+            self.boja_entry.insert(0,vozilo.boja)
+            self.snaga_entry.delete(0,tk.END)
+            self.snaga_entry.insert(0,vozilo.snaga_motora)
+            self.naprodaji_entry.delete(0,tk.END)
+            self.naprodaji_entry.insert(0,vozilo.naprodaji)
+            self.cijena_entry.delete(0,tk.END)
+            self.cijena_entry.insert(0,vozilo.cijena)
     def prikaz_odabranog_vozila(self, event):
         selection = event.widget.curselection()
         if selection:
@@ -176,6 +197,48 @@ class Prikaz_lagera:
                 vozilo = self.motocikli[index - ukupno_automobila]
                 self.odabrano_vozilo = vozilo
                 self.popuni_unos_polja_motocikl(vozilo)
+    def popuni_unos_polja_automobil(self, automobil):
+        self.marka_entry.delete(0, tk.END)
+        self.marka_entry.insert(0, automobil.marka)
+        self.model_entry.delete(0, tk.END)
+        self.model_entry.insert(0, automobil.model)
+        self.godina_entry.delete(0, tk.END)
+        self.godina_entry.insert(0, automobil.godina_proizvodnje)
+        self.novo_entry.delete(0, tk.END)
+        self.novo_entry.insert(0, str(int(automobil.novo)))
+        self.boja_entry.delete(0, tk.END)
+        self.boja_entry.insert(0, automobil.boja)
+        self.snaga_entry.delete(0, tk.END)
+        self.snaga_entry.insert(0, automobil.snaga_motora)
+        self.naprodaji_entry.delete(0, tk.END)
+        self.naprodaji_entry.insert(0, automobil.naprodaji)
+        self.cijena_entry.delete(0, tk.END)
+        self.cijena_entry.insert(0, automobil.cijena)
+        self.broj_vrata_entry.delete(0, tk.END)
+        self.broj_vrata_entry.insert(0, automobil.broj_vrata)
+        self.tip_goriva_entry.delete(0, tk.END)
+        self.tip_goriva_entry.insert(0, automobil.tip_goriva)
+    def popuni_unos_polja_motocikl(self, motocikl):
+        self.marka_entry.delete(0, tk.END)
+        self.marka_entry.insert(0, motocikl.marka)
+        self.model_entry.delete(0, tk.END)
+        self.model_entry.insert(0, motocikl.model)
+        self.godina_entry.delete(0, tk.END)
+        self.godina_entry.insert(0, motocikl.godina_proizvodnje)
+        self.novo_entry.delete(0, tk.END)
+        self.novo_entry.insert(0, str(int(motocikl.novo)))
+        self.boja_entry.delete(0, tk.END)
+        self.boja_entry.insert(0, motocikl.boja)
+        self.snaga_entry.delete(0, tk.END)
+        self.snaga_entry.insert(0, motocikl.snaga_motora)
+        self.naprodaji_entry.delete(0, tk.END)
+        self.naprodaji_entry.insert(0, motocikl.naprodaji)
+        self.cijena_entry.delete(0, tk.END)
+        self.cijena_entry.insert(0, motocikl.cijena)
+        self.broj_vrata_entry.delete(0, tk.END)
+        self.tip_goriva_entry.delete(0, tk.END)
+        self.tip_motocikla_entry.delete(0, tk.END)
+        self.tip_motocikla_entry.insert(0, motocikl.tip_motocikla)
     def spremi_izmjene(self):
         if self.odabrano_vozilo:
             self.odabrano_vozilo.marka = self.marka_entry.get()
@@ -294,4 +357,7 @@ class Prikaz_lagera:
             motocikl=Motocikl(marka, model, godina_proizvodnje, novo, boja, snaga_motora, naprodaji, cijena, tip_motocikla)
             self.motocikli.append(motocikl)
         self.osvjezi_prikaz()
-    
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = Prikaz_lagera(root)
+    root.mainloop() #prikaz nije cjelovit, izmjene, ako je prazno, motor il auto prikaz fali , odabir vozila
