@@ -271,7 +271,7 @@ class Prikaz_lagera:
         self.automobili.clear()
         self.motocikli.clear()
         with open("lager_vozila.csv", mode="r", newline='', encoding='utf-8') as file:
-            for row in reader:
+            for row in csv.reader:
                 if row["Tip"] == "Automobil":
                     automobil = Automobil(row["Marka"], row["Model"], row["Godina proizvodnje"], row["Novo"], row["Boja"], row["Snaga motora"], row["Na prodaji"], row["Cijena"], row["Broj vrata"], row["Tip goriva"])
                     self.automobili.append(automobil)
@@ -360,4 +360,4 @@ class Prikaz_lagera:
 if __name__ == "__main__":
     root = tk.Tk()
     app = Prikaz_lagera(root)
-    root.mainloop() #prikaz nije cjelovit, izmjene, ako je prazno, motor il auto prikaz fali , odabir vozila
+    root.mainloop() #prikaz nije cjelovit, izmjene, ako je prazno, motor il auto prikaz fali , odabir vozila, drop down za benzin/dizel, novo staro, itd, msgbox, 
