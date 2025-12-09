@@ -3,6 +3,24 @@ from tkinter import messagebox
 import csv
 import xml.etree.ElementTree as ET
 
+#V0.1.0
+#inicijalni kod za lager vozila, početak grafičkog sučelja, dodavanje i prikaz vozila
+
+#0.2.0
+#dodano spremanje i učitavanje iz CSV i XML formata, bug fixes
+
+#0.3.0
+#dodani filteri za prikaz vozila
+
+#0.4.0
+#personalizacija boja sučelja
+
+#0.5.0
+#ispravci kod učitavanja iz CSV datoteke, prilagodba velicina gumba i rasporeda
+
+#0.6.0
+#pripreme za završnu verziju, potrebno usavršavanje korisničkog sučelja i testiranje
+
 
 class Vozilo:
     def __init__(self, marka, model, godina_proizvodnje, novo, boja, snaga_motora, naprodaji, cijena):
@@ -27,25 +45,24 @@ class Prikaz_lagera:
     def __init__(self, root):
         self.root = root
         self.root.title("Lager vozila")
-        # fixed window size
         self.root.geometry("1200x650")
         self.root.resizable(False, False)
 
-        # theme / colors (backend settings)
-        # You can change these values to recolor the whole app
+        # postavke boja
+        # Pri personaliziranju programa, boja odabrati prozorom za odabir boja
+        # OBRATITI PAŽNJU NA ČITLJIVOST TEKSTA U ODNOSU NA POZADINU
         self.theme = {
-            "bg": "#f0f0f5",           # window background
-            "frame_bg": "#2c2cad",     # frames background
-            "entry_bg": "#ffffff",     # entry/background color
+            "bg": "#ff0000",           # pozadina glavnog prozora
+            "frame_bg": "#3f3ff9",     # pozadina frame-a
+            "entry_bg": "#ffffff",     # pozadina unosa
             "entry_fg": "#000000",
-            "btn_bg": "#4a7a8c",      # button background
-            "btn_fg": "#ffffff",      # button text
-            "listbox_bg": "#ffffff",
-            "listbox_fg": "#000000",
+            "btn_bg": "#ffffff",      #boja gumbova
+            "btn_fg": "#000000",      #text gumbova
+            "listbox_bg": "#ffffff",    #pozadina liste
+            "listbox_fg": "#000000",    #text liste
             "label_fg": "#000000",
         }
 
-        # apply theme defaults (use option_add so widgets created after this pick them up)
         self.root.configure(bg=self.theme["bg"])
         self.root.option_add("*Frame.background", self.theme["frame_bg"])
         self.root.option_add("*Label.foreground", self.theme["label_fg"])
@@ -80,11 +97,11 @@ class Prikaz_lagera:
         self.filter_var = tk.StringVar(value="Svi")
         self.filter_option = tk.OptionMenu(unos_frame, self.filter_var, "Svi", "Automobili", "Motocikli")
         self.filter_option.grid(row=0, column=1, padx=5, pady=2, sticky="W")
-        # refresh when filter changes
+        # refresh na primjenu filtera
         try:
             self.filter_var.trace_add("write", lambda *args: self.osvjezi_prikaz())
         except AttributeError:
-            # older Python versions
+            # starije verzije Pythona
             self.filter_var.trace("w", lambda *args: self.osvjezi_prikaz())
 
         tk.Label(unos_frame, text="Marka:").grid(row=1, column=0, padx=5, pady=5, sticky="W")
@@ -133,24 +150,24 @@ class Prikaz_lagera:
         self.tip_motocikla_option = tk.OptionMenu(unos_frame, self.tip_motocikla_var, "Sportski", "Touring", "Cruiser", "Off-road", "Chopper")
         self.tip_motocikla_option.grid(row=3, column=5, padx=5, pady=5, sticky="EW")
 
-        self.dodaj_auto_button = tk.Button(unos_frame, text="Dodaj automobil", command=self.dodaj_automobil, width=12)
+        self.dodaj_auto_button = tk.Button(unos_frame, text="Dodaj automobil", command=self.dodaj_automobil, width=14)
         self.dodaj_auto_button.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
 
         self.dodaj_moto_button = tk.Button(unos_frame, text="Dodaj motocikl", command=self.dodaj_motocikl, width=12)
-        self.dodaj_moto_button.grid(row=4, column=2, columnspan=2, padx=5, pady=5)
+        self.dodaj_moto_button.grid(row=4, column=1, columnspan=2, padx=5, pady=5)
 
         self.spremi_izmjene_button = tk.Button(unos_frame, text="Spremi izmjene", command=self.spremi_izmjene, width=12)
-        self.spremi_izmjene_button.grid(row=4, column=4, columnspan=2, padx=5, pady=5)
+        self.spremi_izmjene_button.grid(row=4, column=2, columnspan=2, padx=5, pady=5)
 
         self.spremi_gumb_csv = tk.Button(unos_frame, text="Spremi u CSV", command=self.spremi_u_csv, width=12)
-        self.spremi_gumb_csv.grid(row=4, column=6, columnspan=2, padx=5, pady=5)
+        self.spremi_gumb_csv.grid(row=4, column=3, columnspan=2, padx=5, pady=5)
         self.spremi_gumb_xml = tk.Button(unos_frame, text="Spremi u XML", command=self.spremi_u_xml, width=12)
-        self.spremi_gumb_xml.grid(row=4, column=8, columnspan=2, padx=5, pady=5)
+        self.spremi_gumb_xml.grid(row=4, column=4, columnspan=2, padx=5, pady=5)
 
         self.učitaj_gumb_csv = tk.Button(unos_frame, text="Učitaj iz CSV", command=self.učitaj_iz_csv, width=12)
-        self.učitaj_gumb_csv.grid(row=4, column=10, columnspan=2, padx=5, pady=5)
+        self.učitaj_gumb_csv.grid(row=4, column=5, columnspan=2, padx=5, pady=5)
         self.učitaj_gumb_xml = tk.Button(unos_frame, text="Učitaj iz XML", command=self.učitaj_iz_xml, width=12)
-        self.učitaj_gumb_xml.grid(row=4, column=12, columnspan=2, padx=5, pady=5)
+        self.učitaj_gumb_xml.grid(row=4, column=6, columnspan=2, padx=5, pady=5)
 
         self.prikaz_vozila = tk.Listbox(prikaz_frame)
         self.prikaz_vozila.grid(row=0, column=0, sticky="NSEW")
@@ -173,7 +190,7 @@ class Prikaz_lagera:
         broj_vrata = self.broj_vrata_entry.get()
         tip_goriva = self.tip_goriva_var.get()
 
-        # simple validation: required fields
+        # nedovoljan unos
         if not marka or not model or not godina_proizvodnje or not cijena:
             messagebox.showwarning("Prazno polje", "Molimo popunite obavezna polja: Marka, Model, Godina proizvodnje i Cijena.")
             return
@@ -204,7 +221,7 @@ class Prikaz_lagera:
         self.ocisti_unos_polja()
     def osvjezi_prikaz(self):
         self.prikaz_vozila.delete(0, tk.END)
-        # respect filter selection: Svi, Automobili, Motocikli
+        #filter tipa vozila
         filter_val = getattr(self, 'filter_var', None)
         sel = filter_val.get() if filter_val else "Svi"
 
@@ -229,7 +246,7 @@ class Prikaz_lagera:
         self.broj_vrata_entry.delete(0, tk.END)
         self.tip_goriva_var.set("Benzin")
         self.tip_motocikla_var.set("Sportski")
-    # legacy/unused method removed to avoid references to non-existent attributes
+
     def prikaz_odabranog_vozila(self, event):
         selection = event.widget.curselection()
         if selection:
@@ -250,7 +267,6 @@ class Prikaz_lagera:
         self.model_entry.insert(0, automobil.model)
         self.godina_entry.delete(0, tk.END)
         self.godina_entry.insert(0, automobil.godina_proizvodnje)
-        # set novo dropdown
         self.novo_var.set("Novo" if automobil.novo else "Rabljeno")
         self.boja_entry.delete(0, tk.END)
         self.boja_entry.insert(0, automobil.boja)
@@ -262,7 +278,6 @@ class Prikaz_lagera:
         self.cijena_entry.insert(0, automobil.cijena)
         self.broj_vrata_entry.delete(0, tk.END)
         self.broj_vrata_entry.insert(0, automobil.broj_vrata)
-        # set tip goriva dropdown
         self.tip_goriva_var.set(automobil.tip_goriva)
     def popuni_unos_polja_motocikl(self, motocikl):
         self.marka_entry.delete(0, tk.END)
@@ -272,7 +287,6 @@ class Prikaz_lagera:
         self.godina_entry.delete(0, tk.END)
         self.godina_entry.insert(0, motocikl.godina_proizvodnje)
         self.boja_entry.delete(0, tk.END)
-        # set novo dropdown
         self.novo_var.set("Novo" if motocikl.novo else "Rabljeno")
         self.boja_entry.insert(0, motocikl.boja)
         self.snaga_entry.delete(0, tk.END)
@@ -281,7 +295,6 @@ class Prikaz_lagera:
         self.naprodaji_entry.insert(0, motocikl.naprodaji)
         self.cijena_entry.delete(0, tk.END)
         self.cijena_entry.insert(0, motocikl.cijena)
-        # clear broj vrata and set tip motocikla dropdown
         self.broj_vrata_entry.delete(0, tk.END)
         self.tip_motocikla_var.set(motocikl.tip_motocikla)
     def spremi_izmjene(self):
